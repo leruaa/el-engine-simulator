@@ -1,0 +1,30 @@
+[package]
+name = "el-engine-simulator"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.6"
+
+tokio = { version = "1", features = ["full"] }
+hyper = { version = "0.14", features = ["full"] }
+hyper-tls = "0.5"
+tower-http = { version = "0.3", features = ["trace"] }
+ethers = "1.0"
+serde = "1.0"
+serde_json = "1.0"
+jsonrpsee = { version = "0.16", features = ["client", "macros"] }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth" }
+reth-rpc-types = { git = "https://github.com/paradigmxyz/reth" }
+reth-rlp = { git = "https://github.com/paradigmxyz/reth" }
+anvil-rpc = { git = "https://github.com/foundry-rs/foundry" }
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+[patch.'https://github.com/paradigmxyz/reth']
+reth-primitives = { path = "../reth/crates/primitives" }
+reth-rpc-types = { path = "../reth/crates/net/rpc-types" }
+reth-rlp = { path = "../reth/crates/common/rlp" }
