@@ -1,3 +1,4 @@
+mod cli;
 mod engine_payload;
 mod forkchoice_response;
 
@@ -9,6 +10,7 @@ use axum::extract::FromRequest;
 use axum::http::Request;
 use axum::response::{IntoResponse, Response};
 use axum::{Extension, Json, Router, Server};
+use clap::Parser;
 use ethers::types::U256;
 use hyper::client::HttpConnector;
 use hyper::{Client, Method, StatusCode};
@@ -25,10 +27,12 @@ use serde_json::Value;
 use tower_http::trace::TraceLayer;
 use tracing::{error, info};
 
+use crate::cli::Cli;
 use crate::engine_payload::EnginePayload;
 use crate::forkchoice_response::ForkchoiceResponse;
 
 async fn index(
+    Extension(args): Extension<Cli>,
     Extension(client): Extension<Client<HttpsConnector<HttpConnector>>>,
     request: Request<Body>,
 ) -> Result<Response, StatusCode> {
@@ -41,7 +45,14 @@ async fn index(
 
             let response = match json_method {
                 eth if eth.starts_with("eth") => {
-                    proxy(&json_rpc, &method, uri.path(), client).await
+                    proxy(
+                        &args.el_endpoint_url,
+                        &json_rpc,
+                        &method,
+                        uri.path(),
+                        client,
+                    )
+                    .await
                 }
                 engine if engine.starts_with("engine") => simulator(&json_rpc).await,
                 unknown => Err(anyhow!("Unknown method: {}", unknown)),
@@ -63,14 +74,17 @@ async fn index(
 }
 
 async fn proxy(
+    el_endpoint_url: &str,
     json_rpc: &RpcMethodCall,
     method: &Method,
     path: &str,
     client: Client<HttpsConnector<HttpConnector>>,
 ) -> Result<Response> {
-    let el_url = "...".to_string();
-
-    let request_url_and_path = if path == "/" { el_url } else { el_url + path };
+    let request_url_and_path = if path == "/" {
+        el_endpoint_url.to_owned()
+    } else {
+        el_endpoint_url.to_owned() + path
+    };
     let body = serde_json::to_vec(json_rpc)?;
 
     let req = Request::builder()
@@ -116,8 +130,6 @@ fn exchange_transition_configuration(
     serde_json::to_value(transition_configuration).map_err(Error::from)
 }
 
-// https://github.com/NethermindEth/nethermind/blob/3734ff4c150cd177958395e34e731e15d051e1fd/src/Nethermind/Nethermind.Merge.Plugin/Handlers/V1/NewPayloadV1Handler.cs#L100
-// https://notes.ethereum.org/@ralexstokes/HypWUVCF9#
 fn new_payload(execution_payload: ExecutionPayload) -> Result<Value> {
     let transactions = execution_payload
         .transactions
@@ -181,6 +193,7 @@ fn forkchoice_updated(
 async fn main() {
     tracing_subscriber::fmt::init();
 
+    let args = Cli::parse();
     let https = HttpsConnector::new();
     let client = Client::builder().build::<_, Body>(https);
 
@@ -189,6 +202,7 @@ async fn main() {
     // Axum router
     let router = Router::new()
         .fallback(index)
+        .layer(Extension(args))
         .layer(Extension(client))
         .layer(TraceLayer::new_for_http());
 
