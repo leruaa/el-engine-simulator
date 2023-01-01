@@ -1,6 +1,5 @@
 mod cli;
 mod engine_payload;
-mod forkchoice_response;
 
 use anvil_rpc::request::RpcMethodCall;
 use anvil_rpc::response::{ResponseResult, RpcResponse};
@@ -19,8 +18,8 @@ use reth_primitives::proofs::calculate_transaction_root;
 use reth_primitives::{Header, TransactionSigned, EMPTY_OMMER_ROOT, H256};
 use reth_rlp::Decodable;
 use reth_rpc_types::engine::{
-    ExecutionPayload, ForkchoiceState, PayloadAttributes, PayloadStatus, PayloadStatusEnum,
-    TransitionConfiguration,
+    ExecutionPayload, ForkchoiceState, ForkchoiceUpdated, PayloadAttributes, PayloadStatus,
+    PayloadStatusEnum, TransitionConfiguration,
 };
 
 use serde_json::Value;
@@ -29,7 +28,6 @@ use tracing::{error, info};
 
 use crate::cli::Cli;
 use crate::engine_payload::EnginePayload;
-use crate::forkchoice_response::ForkchoiceResponse;
 
 async fn index(
     Extension(args): Extension<Cli>,
@@ -178,7 +176,7 @@ fn forkchoice_updated(
     forkchoice_state: ForkchoiceState,
     _payload_attributes: Option<PayloadAttributes>,
 ) -> Result<Value> {
-    let forkchoice = ForkchoiceResponse {
+    let forkchoice = ForkchoiceUpdated {
         payload_status: PayloadStatus {
             status: PayloadStatusEnum::Valid,
             latest_valid_hash: Some(forkchoice_state.head_block_hash),
