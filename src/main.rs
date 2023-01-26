@@ -10,12 +10,11 @@ use axum::http::Request;
 use axum::response::{IntoResponse, Response};
 use axum::{Extension, Json, Router, Server};
 use clap::Parser;
-use ethers::types::U256;
 use hyper::client::HttpConnector;
 use hyper::{Client, Method, StatusCode};
 use hyper_tls::HttpsConnector;
 use reth_primitives::proofs::calculate_transaction_root;
-use reth_primitives::{Header, TransactionSigned, EMPTY_OMMER_ROOT, H256};
+use reth_primitives::{Header, TransactionSigned, EMPTY_OMMER_ROOT, H256, U256, U64};
 use reth_rlp::Decodable;
 use reth_rpc_types::engine::{
     ExecutionPayload, ForkchoiceState, ForkchoiceUpdated, PayloadAttributes, PayloadStatus,
@@ -120,9 +119,9 @@ fn exchange_transition_configuration(
     _transition_configuration: TransitionConfiguration,
 ) -> Result<Value> {
     let transition_configuration = TransitionConfiguration {
-        terminal_total_difficulty: U256::from_dec_str("58750000000000000000000").unwrap(),
+        terminal_total_difficulty: U256::from(58750000000000000000000_i128),
         terminal_block_hash: H256::zero(),
-        terminal_block_number: 0,
+        terminal_block_number: U64::zero(),
     };
 
     serde_json::to_value(transition_configuration).map_err(Error::from)
@@ -144,15 +143,15 @@ fn new_payload(execution_payload: ExecutionPayload) -> Result<Value> {
         transactions_root: calculate_transaction_root(transactions.iter()),
         receipts_root: execution_payload.receipts_root,
         logs_bloom: execution_payload.logs_bloom,
-        difficulty: U256::zero(),
+        difficulty: U256::from(0),
         number: execution_payload.block_number.as_u64(),
         gas_limit: execution_payload.gas_limit.as_u64(),
         gas_used: execution_payload.gas_used.as_u64(),
         timestamp: execution_payload.timestamp.as_u64(),
         mix_hash: execution_payload.prev_randao,
         nonce: 0,
-        base_fee_per_gas: Some(execution_payload.base_fee_per_gas.as_u64()),
-        extra_data: execution_payload.extra_data.0,
+        base_fee_per_gas: Some(execution_payload.base_fee_per_gas.to()),
+        extra_data: execution_payload.extra_data,
     };
 
     let payload_status = if execution_payload.block_hash != header.hash_slow() {
