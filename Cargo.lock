@@ -477,6 +477,7 @@ dependencies = [
 [[package]]
 name = "codecs-derive"
 version = "0.1.0"
+source = "git+https://github.com/paradigmxyz/reth?rev=e8d7c051cab95a383f9bcd34c00bec3ea47adfa1#e8d7c051cab95a383f9bcd34c00bec3ea47adfa1"
 dependencies = [
  "parity-scale-codec",
  "proc-macro2",
@@ -2649,6 +2650,7 @@ dependencies = [
 [[package]]
 name = "reth-codecs"
 version = "0.1.0"
+source = "git+https://github.com/paradigmxyz/reth?rev=e8d7c051cab95a383f9bcd34c00bec3ea47adfa1#e8d7c051cab95a383f9bcd34c00bec3ea47adfa1"
 dependencies = [
  "bytes",
  "codecs-derive",
@@ -2658,6 +2660,7 @@ dependencies = [
 [[package]]
 name = "reth-network-api"
 version = "0.1.0"
+source = "git+https://github.com/paradigmxyz/reth?rev=e8d7c051cab95a383f9bcd34c00bec3ea47adfa1#e8d7c051cab95a383f9bcd34c00bec3ea47adfa1"
 dependencies = [
  "async-trait",
  "reth-primitives",
@@ -2669,6 +2672,7 @@ dependencies = [
 [[package]]
 name = "reth-primitives"
 version = "0.1.0"
+source = "git+https://github.com/paradigmxyz/reth?rev=e8d7c051cab95a383f9bcd34c00bec3ea47adfa1#e8d7c051cab95a383f9bcd34c00bec3ea47adfa1"
 dependencies = [
  "bytes",
  "crc",
@@ -2702,6 +2706,7 @@ dependencies = [
 [[package]]
 name = "reth-rlp"
 version = "0.1.2"
+source = "git+https://github.com/paradigmxyz/reth?rev=e8d7c051cab95a383f9bcd34c00bec3ea47adfa1#e8d7c051cab95a383f9bcd34c00bec3ea47adfa1"
 dependencies = [
  "arrayvec",
  "auto_impl 1.0.1",
@@ -2714,6 +2719,7 @@ dependencies = [
 [[package]]
 name = "reth-rlp-derive"
 version = "0.1.1"
+source = "git+https://github.com/paradigmxyz/reth?rev=e8d7c051cab95a383f9bcd34c00bec3ea47adfa1#e8d7c051cab95a383f9bcd34c00bec3ea47adfa1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2723,6 +2729,7 @@ dependencies = [
 [[package]]
 name = "reth-rpc-types"
 version = "0.1.0"
+source = "git+https://github.com/paradigmxyz/reth?rev=e8d7c051cab95a383f9bcd34c00bec3ea47adfa1#e8d7c051cab95a383f9bcd34c00bec3ea47adfa1"
 dependencies = [
  "bytes",
  "reth-network-api",
